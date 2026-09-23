@@ -1,103 +1,77 @@
 "use client";
 
 import { useState } from "react";
-import FavoriteBandCard from "@/components/favorite_band";
-import { favorite_band_data } from "@/data/favorite_band_data";
+import { courses as initialCourses } from "@/data/courses";
+import CoursesCard from "@/components/CoursesCard";
+import CourseForm from "@/components/CourseForm";
 
 export default function CourseExplorer() {
+  const [courseList, setCourseList] = useState(initialCourses);
   const [searchQuery, setSearchQuery] = useState("");
-  const [followedBands, setFollowedBands] = useState<{ [key: string]: boolean }>({});
-  const [likes, setLikes] = useState<{ [key: string]: number }>({});
 
-  const toggleFollow = (bandName: string) => {
-    setFollowedBands((prev) => ({
-      ...prev,
-      [bandName]: !prev[bandName],
-    }));
-  };
-
-  const handleLike = (bandName: string) => {
-    setLikes((prev) => ({
-      ...prev,
-      [bandName]: (prev[bandName] || 0) + 1,
-    }));
-  };
-
-  const handleReset = () => {
-    setSearchQuery("");
-    setFollowedBands({});
-    setLikes({});
-  };
-
-  const filteredBands = favorite_band_data.filter((band) =>
-    band.name.toLowerCase().includes(searchQuery.toLowerCase())
+  // กรองรายวิชาตามชื่อหรือรหัสวิชา
+  const filteredCourses = courseList.filter(
+    (course: any) =>
+      course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.code.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const totalFollowed = Object.values(followedBands).filter(Boolean).length;
-  const totalLikes = Object.values(likes).reduce((acc, curr) => acc + curr, 0);
+  // ฟังก์ชันเพิ่มรายวิชาใหม่
+  const handleAddCourse = (newCourse: any) => {
+    setCourseList([newCourse, ...courseList]);
+  };
+
+  // ฟังก์ชันลบรายวิชา
+  const handleDeleteCourse = (id: number) => {
+    setCourseList(courseList.filter((course) => course.id !== id));
+  };
 
   return (
     <div>
-      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 bg-slate-800 p-4 rounded-xl border border-slate-700">
-        <div className="flex w-full md:w-1/2 gap-2">
-          <input
-            type="text"
-            placeholder="ค้นหาชื่อวงดนตรี..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:outline-none focus:border-blue-500"
-          />
-          <button
-            onClick={handleReset}
-            className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
-          >
-            ล้างค่า
-          </button>
-        </div>
-
-        <div className="flex gap-6 text-sm text-slate-300">
-          <span>กำลังติดตาม: <strong className="text-blue-400">{totalFollowed}</strong> วง</span>
-          <span>ถูกใจรวม: <strong className="text-pink-400">{totalLikes}</strong> ครั้ง</span>
-        </div>
+      <div className="mb-8">
+        <h1 className="text-4xl font-extrabold text-white mb-2">รายวิชาทั้งหมด</h1>
+        <p className="text-stone-400">ค้นหา แก้ไข และจัดการรายวิชาที่เปิดสอนได้ในที่เดียว</p>
       </div>
 
-      {filteredBands.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredBands.map((band, index) => {
-            const isFollowed = followedBands[band.name] || false;
-            const likeCount = likes[band.name] || 0;
+      {/* ช่องค้นหา - ใช้สไตล์กล่องสีเทาเข้มขอบมนแบบหน้าเกม */}
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 bg-[#211f1c] p-4 rounded-xl border border-[#36322d] shadow-lg">
+        <input
+          type="text"
+          placeholder="ค้นหาชื่อวิชาหรือรหัสวิชา..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full md:w-2/3 px-4 py-2 rounded-lg bg-[#141210] border border-[#36322d] text-stone-100 focus:outline-none focus:border-amber-500"
+        />
+        <span className="text-sm text-stone-400">
+          พบ <strong className="text-amber-400">{filteredCourses.length}</strong> จาก {courseList.length} รายวิชา
+        </span>
+      </div>
 
-            return (
-              <div key={index} className="flex flex-col bg-slate-800 rounded-xl overflow-hidden border border-slate-700 p-4 justify-between">
-                <FavoriteBandCard band={band} />
-                <div className="flex justify-between items-center mt-4 pt-4 border-t border-slate-700">
-                  <button
-                    onClick={() => toggleFollow(band.name)}
-                    className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
-                      isFollowed 
-                        ? "bg-rose-600 hover:bg-rose-700 text-white" 
-                        : "bg-blue-600 hover:bg-blue-700 text-white"
-                    }`}
-                  >
-                    {isFollowed ? "เลิกติดตาม" : "ติดตาม"}
-                  </button>
-
-                  <button
-                    onClick={() => handleLike(band.name)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-sm text-pink-400 font-medium transition-colors"
-                  >
-                    ❤️ Like ({likeCount})
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+      {/* แสดงรายการการ์ดรายวิชา - ใช้การ์ดสีเทาเข้มแบบหน้าเกม */}
+      {filteredCourses.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {filteredCourses.map((course: any) => (
+            <div key={course.id} className="relative bg-[#211f1c] rounded-xl border border-[#36322d] p-6 shadow-lg">
+              <CoursesCard course={course} />
+              <button 
+                onClick={() => handleDeleteCourse(course.id)}
+                className="absolute top-4 right-4 text-rose-400 hover:text-rose-300 text-xs font-medium"
+              >
+                ลบ
+              </button>
+            </div>
+          ))}
         </div>
       ) : (
-        <div className="text-center py-20 text-slate-400 text-lg">
-          ไม่พบวงดนตรีตรงตามเงื่อนไข (Empty State)
+        <div className="text-center py-20 text-stone-500 text-lg">
+          ไม่พบรายวิชาที่ค้นหา
         </div>
       )}
+
+      {/* ฟอร์มเพิ่มรายวิชาใหม่ */}
+      <div className="mt-8">
+        <CourseForm onAddCourse={handleAddCourse} />
+      </div>
     </div>
   );
 }

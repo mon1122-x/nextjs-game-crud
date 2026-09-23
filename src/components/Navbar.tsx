@@ -21,7 +21,12 @@ export default function Navbar() {
         </li>
         <li>
           <Link className="navLink" href="/favorite_bands">
-            วงดนตรีที่ชอบ
+            วงดนตรี
+          </Link>
+        </li>
+        <li>
+          <Link className="navLink" href="/games">
+            เกม
           </Link>
         </li>
       </ul>

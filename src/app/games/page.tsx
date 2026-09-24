@@ -36,7 +36,7 @@ export default function GamesPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#1c1917] text-stone-100 pb-16">
+    <main className="min-h-screen bg-[#0b0f19] text-slate-100 pb-16">
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
         
@@ -48,28 +48,28 @@ export default function GamesPage() {
         </div>
 
         {/* ฟอร์มเพิ่มเกมใหม่ด้านล่าง */}
-        <div className="bg-[#211f1c] p-6 rounded-xl border border-[#36322d] shadow-lg mt-8">
-          <h2 className="text-2xl font-bold text-stone-100 mb-6">เพิ่มเกมใหม่</h2>
+        <div className="bg-[#111827] p-6 rounded-xl border border-[#1f2937] shadow-lg mt-8">
+          <h2 className="text-2xl font-bold text-slate-100 mb-6">เพิ่มเกมใหม่</h2>
           
           <form onSubmit={handleAddGame} className="space-y-4">
             <div>
-              <label className="block text-sm text-stone-300 mb-1">ชื่อเกม</label>
+              <label className="block text-sm text-slate-300 mb-1">ชื่อเกม</label>
               <input
                 type="text"
                 placeholder="ชื่อเกม..."
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg bg-[#141210] border border-[#36322d] text-stone-100 focus:outline-none focus:border-amber-500"
+                className="w-full px-4 py-2 rounded-lg bg-[#030712] border border-[#1f2937] text-slate-100 focus:outline-none focus:border-indigo-500"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm text-stone-300 mb-1">แพลตฟอร์ม</label>
+              <label className="block text-sm text-slate-300 mb-1">แพลตฟอร์ม</label>
               <select
                 value={platform}
                 onChange={(e) => setPlatform(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg bg-[#141210] border border-[#36322d] text-stone-100 focus:outline-none focus:border-amber-500"
+                className="w-full px-4 py-2 rounded-lg bg-[#030712] border border-[#1f2937] text-slate-100 focus:outline-none focus:border-indigo-500"
                 required
               >
                 <option value="" disabled>-- เลือกแพลตฟอร์ม --</option>
@@ -82,22 +82,22 @@ export default function GamesPage() {
             </div>
 
             <div>
-              <label className="block text-sm text-stone-300 mb-1">จำนวนชั่วโมงที่คาดว่าจะใช้เล่น</label>
+              <label className="block text-sm text-slate-300 mb-1">จำนวนชั่วโมงที่คาดว่าจะใช้เล่น</label>
               <input
                 type="number"
                 placeholder="จำนวนชั่วโมง"
                 value={hours}
                 onChange={(e) => setHours(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg bg-[#141210] border border-[#36322d] text-stone-100 focus:outline-none focus:border-amber-500"
+                className="w-full px-4 py-2 rounded-lg bg-[#030712] border border-[#1f2937] text-slate-100 focus:outline-none focus:border-indigo-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm text-stone-300 mb-1">สถานะ</label>
+              <label className="block text-sm text-slate-300 mb-1">สถานะ</label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg bg-[#141210] border border-[#36322d] text-stone-100 focus:outline-none focus:border-amber-500"
+                className="w-full px-4 py-2 rounded-lg bg-[#030712] border border-[#1f2937] text-slate-100 focus:outline-none focus:border-indigo-500"
               >
                 <option value="ยังไม่เริ่ม">ยังไม่เริ่ม</option>
                 <option value="กำลังเล่น">กำลังเล่น</option>

@@ -1,4 +1,4 @@
-// File: C:\favorite_bands\src\app\favorite_bands\page.tsx
+// File: C:\nextjs-game-crud\src\app\favorite_bands\page.tsx
 import * as entry from '../../../../src/app/favorite_bands/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

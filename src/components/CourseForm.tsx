@@ -1,95 +1,121 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Course } from "@/data/courses";
 
-export default function CourseForm({ onAddCourse }: { onAddCourse: (course: any) => void }) {
-  const [code, setCode] = useState("");
+interface CourseFormProps {
+  onSave: (courseData: { title: string; code: string; credits: number; description: string }) => void;
+  editingCourse?: Course | null;
+  onCancelEdit?: () => void;
+}
+
+export default function CourseForm({ onSave, editingCourse, onCancelEdit }: CourseFormProps) {
   const [title, setTitle] = useState("");
-  const [credit, setCredit] = useState("");
-  const [instructor, setInstructor] = useState("");
+  const [code, setCode] = useState("");
+  const [credits, setCredits] = useState("");
+  const [description, setDescription] = useState("");
+
+  useEffect(() => {
+    if (editingCourse) {
+      setTitle(editingCourse.title);
+      setCode(editingCourse.code);
+      setCredits(editingCourse.credits.toString());
+      setDescription(editingCourse.description);
+    } else {
+      setTitle("");
+      setCode("");
+      setCredits("");
+      setDescription("");
+    }
+  }, [editingCourse]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!code || !title) return;
+    if (!title || !code) return;
 
-    const newCourse = {
-      id: Date.now(),
-      code: code.toUpperCase(),
+    onSave({
       title,
-      credit: Number(credit) || 3,
-      instructor: instructor || "อาจารย์ผู้สอนรายวิชา",
-    };
+      code,
+      credits: Number(credits) || 3,
+      description,
+    });
 
-    onAddCourse(newCourse);
-
-    // รีเซ็ตฟอร์ม
-    setCode("");
     setTitle("");
-    setCredit("");
-    setInstructor("");
+    setCode("");
+    setCredits("");
+    setDescription("");
   };
 
   return (
-    <div className="bg-[#211f1c] p-6 rounded-xl border border-[#36322d] shadow-lg mt-8">
-      <h2 className="text-2xl font-bold text-stone-100 mb-6">เพิ่มรายวิชาใหม่</h2>
-      
+    <div className="bg-[#111827] p-6 rounded-xl border border-[#1f2937] shadow-lg max-w-xl">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold text-slate-100">
+          {editingCourse ? "แก้ไขข้อมูลรายวิชา" : "เพิ่มรายวิชาใหม่"}
+        </h2>
+        {editingCourse && onCancelEdit && (
+          <button
+            type="button"
+            onClick={onCancelEdit}
+            className="text-xs text-slate-400 hover:text-slate-200 underline cursor-pointer"
+          >
+            ยกเลิกการแก้ไข
+          </button>
+        )}
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* รหัสวิชา */}
-        <div>
-          <label className="block text-sm text-stone-300 mb-1">รหัสวิชา</label>
-          <input
-            type="text"
-            placeholder="เช่น CS101"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg bg-[#141210] border border-[#36322d] text-stone-100 focus:outline-none focus:border-amber-500"
-            required
-          />
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm text-slate-300 mb-1">รหัสวิชา</label>
+            <input
+              type="text"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="เช่น CS101"
+              required
+              className="w-full px-4 py-2 rounded-lg bg-[#030712] border border-[#1f2937] text-slate-100 focus:outline-none focus:border-emerald-500 text-sm"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-slate-300 mb-1">หน่วยกิต</label>
+            <input
+              type="number"
+              value={credits}
+              onChange={(e) => setCredits(e.target.value)}
+              placeholder="เช่น 3"
+              className="w-full px-4 py-2 rounded-lg bg-[#030712] border border-[#1f2937] text-slate-100 focus:outline-none focus:border-emerald-500 text-sm"
+            />
+          </div>
         </div>
 
-        {/* ชื่อวิชา */}
         <div>
-          <label className="block text-sm text-stone-300 mb-1">ชื่อวิชา</label>
+          <label className="block text-sm text-slate-300 mb-1">ชื่อวิชา</label>
           <input
             type="text"
-            placeholder="เช่น Introduction to Computer Science"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg bg-[#141210] border border-[#36322d] text-stone-100 focus:outline-none focus:border-amber-500"
+            placeholder="ชื่อรายวิชา..."
             required
+            className="w-full px-4 py-2 rounded-lg bg-[#030712] border border-[#1f2937] text-slate-100 focus:outline-none focus:border-emerald-500 text-sm"
           />
         </div>
 
-        {/* จำนวนหน่วยกิต */}
         <div>
-          <label className="block text-sm text-stone-300 mb-1">จำนวนหน่วยกิต</label>
-          <input
-            type="number"
-            placeholder="เช่น 3"
-            value={credit}
-            onChange={(e) => setCredit(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg bg-[#141210] border border-[#36322d] text-stone-100 focus:outline-none focus:border-amber-500"
+          <label className="block text-sm text-slate-300 mb-1">คำอธิบายรายวิชา</label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="รายละเอียดเกี่ยวกับวิชานี้..."
+            rows={3}
+            className="w-full px-4 py-2 rounded-lg bg-[#030712] border border-[#1f2937] text-slate-100 focus:outline-none focus:border-emerald-500 text-sm"
           />
         </div>
 
-        {/* ผู้สอน */}
-        <div>
-          <label className="block text-sm text-stone-300 mb-1">ผู้สอน</label>
-          <input
-            type="text"
-            placeholder="ชื่ออาจารย์ผู้สอน"
-            value={instructor}
-            onChange={(e) => setInstructor(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg bg-[#141210] border border-[#36322d] text-stone-100 focus:outline-none focus:border-amber-500"
-          />
-        </div>
-
-        {/* ปุ่มบันทึก */}
         <button
           type="submit"
-          className="px-6 py-2 bg-emerald-700 hover:bg-emerald-600 text-white font-medium rounded-lg transition-colors cursor-pointer"
+          className="w-full bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-semibold py-2 rounded-lg text-sm transition cursor-pointer"
         >
-          บันทึก
+          {editingCourse ? "บันทึกการแก้ไข" : "บันทึกรายวิชา"}
         </button>
       </form>
     </div>

@@ -1,28 +1,45 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Game } from "@/data/games";
 
-export default function GameForm({ onAddGame }: { onAddGame: (game: any) => void }) {
+interface GameFormProps {
+  onSaveGame: (gameData: { title: string; platform: string; hours: number; status: Game["status"] }) => void;
+  editingGame?: Game | null;
+  onCancelEdit?: () => void;
+}
+
+export default function GameForm({ onSaveGame, editingGame, onCancelEdit }: GameFormProps) {
   const [title, setTitle] = useState("");
   const [platform, setPlatform] = useState("");
   const [hours, setHours] = useState("");
-  const [status, setStatus] = useState("ยังไม่เริ่ม");
+  const [status, setStatus] = useState<Game["status"]>("ยังไม่เริ่ม");
+
+  useEffect(() => {
+    if (editingGame) {
+      setTitle(editingGame.title);
+      setPlatform(editingGame.platform);
+      setHours(editingGame.hours.toString());
+      setStatus(editingGame.status);
+    } else {
+      setTitle("");
+      setPlatform("");
+      setHours("");
+      setStatus("ยังไม่เริ่ม");
+    }
+  }, [editingGame]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !platform) return;
+    if (!title) return;
 
-    const newGame = {
-      id: Date.now(),
+    onSaveGame({
       title,
-      platform,
-      hours: Number(hours) || 0,
+      platform: platform || "PC",
+      hours: Number(hours) || 10,
       status,
-    };
+    });
 
-    onAddGame(newGame);
-
-    // รีเซ็ตฟอร์ม
     setTitle("");
     setPlatform("");
     setHours("");
@@ -30,73 +47,78 @@ export default function GameForm({ onAddGame }: { onAddGame: (game: any) => void
   };
 
   return (
-    <div className="bg-[#211f1c] p-6 rounded-xl border border-[#36322d] shadow-lg mt-8 max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold text-stone-100 mb-6">เพิ่มเกมใหม่</h2>
-      
+    <div className="bg-[#111827] p-6 rounded-xl border border-[#1f2937] shadow-lg max-w-xl">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold text-slate-100">
+          {editingGame ? "แก้ไขข้อมูลเกม" : "เพิ่มเกมใหม่"}
+        </h2>
+        {editingGame && onCancelEdit && (
+          <button
+            type="button"
+            onClick={onCancelEdit}
+            className="text-xs text-slate-400 hover:text-slate-200 underline cursor-pointer"
+          >
+            ยกเลิกการแก้ไข
+          </button>
+        )}
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* ชื่อเกม */}
         <div>
-          <label className="block text-sm text-stone-300 mb-1">ชื่อเกม</label>
+          <label className="block text-sm text-slate-300 mb-1">ชื่อเกม</label>
           <input
             type="text"
-            placeholder="ชื่อเกม..."
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg bg-[#141210] border border-[#36322d] text-stone-100 focus:outline-none focus:border-amber-500"
+            placeholder="ชื่อเกม..."
             required
+            className="w-full px-4 py-2 rounded-lg bg-[#030712] border border-[#1f2937] text-slate-100 focus:outline-none focus:border-emerald-500 text-sm"
           />
         </div>
 
-        {/* แพลตฟอร์ม (Dropdown) */}
-        <div>
-          <label className="block text-sm text-stone-300 mb-1">แพลตฟอร์ม</label>
-          <select
-            value={platform}
-            onChange={(e) => setPlatform(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg bg-[#141210] border border-[#36322d] text-stone-100 focus:outline-none focus:border-amber-500"
-            required
-          >
-            <option value="" disabled>-- เลือกแพลตฟอร์ม --</option>
-            <option value="PC">PC</option>
-            <option value="PlayStation 5">PlayStation 5</option>
-            <option value="Xbox Series X">Xbox Series X</option>
-            <option value="Nintendo Switch">Nintendo Switch</option>
-            <option value="Mobile">Mobile</option>
-          </select>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm text-slate-300 mb-1">แพลตฟอร์ม</label>
+            <input
+              type="text"
+              value={platform}
+              onChange={(e) => setPlatform(e.target.value)}
+              placeholder="PC, Switch..."
+              className="w-full px-4 py-2 rounded-lg bg-[#030712] border border-[#1f2937] text-slate-100 focus:outline-none focus:border-emerald-500 text-sm"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-slate-300 mb-1">ชั่วโมงที่คาดว่าจะใช้</label>
+            <input
+              type="number"
+              value={hours}
+              onChange={(e) => setHours(e.target.value)}
+              placeholder="จำนวนชั่วโมง"
+              className="w-full px-4 py-2 rounded-lg bg-[#030712] border border-[#1f2937] text-slate-100 focus:outline-none focus:border-emerald-500 text-sm"
+            />
+          </div>
         </div>
 
-        {/* จำนวนชั่วโมงที่คาดว่าจะใช้เล่น */}
-        <div>
-          <label className="block text-sm text-stone-300 mb-1">จำนวนชั่วโมงที่คาดว่าจะใช้เล่น</label>
-          <input
-            type="number"
-            placeholder="จำนวนชั่วโมง"
-            value={hours}
-            onChange={(e) => setHours(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg bg-[#141210] border border-[#36322d] text-stone-100 focus:outline-none focus:border-amber-500"
-          />
-        </div>
+        {editingGame && (
+          <div>
+            <label className="block text-sm text-slate-300 mb-1">สถานะ</label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value as Game["status"])}
+              className="w-full px-4 py-2 rounded-lg bg-[#030712] border border-[#1f2937] text-slate-100 focus:outline-none focus:border-emerald-500 text-sm"
+            >
+              <option value="ยังไม่เริ่ม">ยังไม่เริ่ม</option>
+              <option value="กำลังเล่น">กำลังเล่น</option>
+              <option value="เล่นจบแล้ว">เล่นจบแล้ว</option>
+            </select>
+          </div>
+        )}
 
-        {/* สถานะ (Dropdown) */}
-        <div>
-          <label className="block text-sm text-stone-300 mb-1">สถานะ</label>
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg bg-[#141210] border border-[#36322d] text-stone-100 focus:outline-none focus:border-amber-500"
-          >
-            <option value="ยังไม่เริ่ม">ยังไม่เริ่ม</option>
-            <option value="กำลังเล่น">กำลังเล่น</option>
-            <option value="เล่นจบแล้ว">เล่นจบแล้ว</option>
-          </select>
-        </div>
-
-        {/* ปุ่มบันทึก */}
         <button
           type="submit"
-          className="px-6 py-2 bg-emerald-700 hover:bg-emerald-600 text-white font-medium rounded-lg transition-colors cursor-pointer"
+          className="w-full bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-semibold py-2 rounded-lg text-sm transition cursor-pointer"
         >
-          บันทึกเกม
+          {editingGame ? "บันทึกการแก้ไข" : "บันทึกเกม"}
         </button>
       </form>
     </div>

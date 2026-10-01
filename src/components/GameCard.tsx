@@ -1,6 +1,14 @@
 "use client";
 
-export default function GameCard({ game, onDelete }: { game: any; onDelete: (id: number) => void }) {
+export default function GameCard({ 
+  game, 
+  onDelete, 
+  onEdit 
+}: { 
+  game: any; 
+  onDelete: (id: number) => void; 
+  onEdit: (game: any) => void; 
+}) {
   return (
     <div className="bg-stone-900/60 border border-stone-800/80 rounded-xl p-5 shadow-lg flex flex-col justify-between space-y-4">
       <div className="space-y-2">
@@ -17,7 +25,12 @@ export default function GameCard({ game, onDelete }: { game: any; onDelete: (id:
       </div>
 
       <div className="flex gap-3 text-xs pt-2">
-        <button className="text-emerald-400 hover:underline">แก้ไข</button>
+        <button 
+          onClick={() => onEdit(game)}
+          className="text-emerald-400 hover:underline"
+        >
+          แก้ไข
+        </button>
         <button 
           onClick={() => onDelete(game.id)}
           className="text-rose-400 hover:underline"
